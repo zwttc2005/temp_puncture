@@ -149,11 +149,21 @@
     p_cal = p_ghost_update/1000.0; // kpa
     rho_cal = rho_ghost_update/MW; // mol/L
     PDFLSHdll(p_cal,rho_cal,x_cal,T_cal,rholiq_cal,rhovap_cal,xliq_cal,xvap_cal,q_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,ierr,herr,255);
-   
-    T_ghost_update = T_cal;
-    rho1_ghost_update = rhovap_cal*MW;
-    rho2_ghost_update = rholiq_cal*MW;
-  
+    
+    if (ierr == 0) 
+    {		
+    	T_ghost_update = T_cal;
+    	rho1_ghost_update = rhovap_cal*MW;
+    	rho2_ghost_update = rholiq_cal*MW;
+    }
+    else 
+    {
+	T_ghost_update = T_ghost_update;		
+	rho1_ghost_update = rho1_ghost_update;
+	rho2_ghost_update = rho2_ghost_update;
+    }
+
+	
     if (q_cal >= 0.0 && q_cal <= 1.0) 
     {
     	alpha1_ghost_update = q_cal*(rho_cal/rhovap_cal);
@@ -172,7 +182,7 @@
   //-----------------------------------------------------------
   // subsonic outflow boundary condition
   //-----------------------------------------------------------
-  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.3, areaRatio = dischargeCoeff*(area2/area1);
+  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.9, areaRatio = dischargeCoeff*(area2/area1);
   scalar rhoU_ghost, rhoU_ghost_update, ddrhoU_ghost;	
 
   //ghost cell information for subsonic outflow
@@ -205,7 +215,7 @@
     // speed of sound at the ghost cell for subsonic outflow
     T_cal = T1_ghost, rho_cal = rho1_ghost/MW;
     THERMdll(T_cal,rho_cal,x_cal,p_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,hjt);
-	   	
+	   	 	
     if (w_cal = w_cal) sos1 = w_cal;
     else if (w_cal != w_cal) sos1 = sos1;	
 
@@ -229,8 +239,8 @@
     //----------------------------------------------------------		
  
   //calculat rho*U for the new ghost cell (subsonic ghost cell)  
-  rhoU_ghost = rho_ghost*U_ghost*areaRatio;	
-  rhoU_ghost_update = rho_ghost_update*U_ghost_update*areaRatio;	 	
+  rhoU_ghost = rho_interior*U_interior;	
+  rhoU_ghost_update = rho_ghost_update*U_ghost_update*dischargeCoeff*areaRatio;	 	
   ddrhoU_ghost = (rhoU_ghost_update-rhoU_ghost)/dt; 	
 	
   //wave amplitude calculation  

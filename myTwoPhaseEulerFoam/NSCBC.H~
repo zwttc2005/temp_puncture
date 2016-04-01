@@ -158,12 +158,12 @@
   	else 
   	{
     		alpha1_ghost_update = 0.0;
-  	}
+  	}*/
 
   	Info << "p_ghost_update = " << p_ghost_update << nl << endl;	
 	Info << "U_ghost_update = " << U_ghost_update << nl << endl;
 	Info << "rho_ghost_update = " << rho_ghost_update << nl << endl;
-	Info << "T_ghost_update = " << T_ghost_update << nl << endl;
-  	Info << "alpha1_ghost_update = " << alpha1_ghost_update << nl << endl;*/
+	//Info << "T_ghost_update = " << T_ghost_update << nl << endl;
+  	//Info << "alpha1_ghost_update = " << alpha1_ghost_update << nl << endl;
   
   //-----------------------------------------------------------

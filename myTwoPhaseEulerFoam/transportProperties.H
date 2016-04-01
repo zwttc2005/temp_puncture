@@ -40,10 +40,18 @@ volScalarField cpVap("cpVap", thermo1.Cpv());
 	T = TvapInit;
 	rho = rhovapInit/44.01;
 	TRNPRPdll (T,rho,xvap,eta,tcx,ierr,herr,255); // 255 is compeletly random 
-
-	muvap = eta/1000000.; // upa.s to pa.s
-	kvap = tcx; // W/m-K
-
+	
+	if (ierr == 0)
+	{
+		muvap = eta/1000000.; // upa.s to pa.s
+		kvap = tcx; // W/m-K
+	}
+	else
+	{
+		muvap = muvap;
+		kvap = kvap;
+	}	
+	
 	//TRNPRPdll (TliqInit,rholiqInit,xliq,eta,tcx,ierr,herr,255);
 
 	//muliq = eta/1000000.	
@@ -65,7 +73,7 @@ for(i = 0; i < celln+1; i++)
 	// heat transfer to the vapour phase from the wall
 	if (TwallS > thermo1.T()[i])
 	{	
-		qV_wallS = htcVapS*totalArea/totalVolume*(TwallS - thermo1.T()[i]);
+		qV_wallS = 1000.*htcVapS*totalArea/totalVolume*(TwallS - thermo1.T()[i]);
 	}
 	else
 	{
@@ -81,4 +89,4 @@ for(i = 0; i < celln+1; i++)
 }
 
 //Info << "wall temperature" << Twall << nl << endl;
-//Info << "heat transfer"  << qV_wall << nl << endl;
+Info << "heat transfer"  << qV_wall[celln] << nl << endl;

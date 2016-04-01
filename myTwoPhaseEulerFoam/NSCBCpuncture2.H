@@ -25,14 +25,17 @@
  	Info << "temperatue1 = " << thermo1.T()[celln] << nl << endl;
 	//Info << "enthalpy1 = " << thermo1.he()[celln] << nl << endl; 
 
-  	// declare the properties which is calculated based on characteristic
-  	// analysis
+  	// declare the varaibles of ghost cell for supersonic and subsonic outflow
+	// ghost cell 1
   	scalar p_ghost_update, U_ghost_update, rho_ghost_update, T_ghost_update, rho1_ghost_update, rho2_ghost_update, alpha1_ghost_update;
-  	scalar U_ghost, p_ghost, rho_ghost, rho1_ghost, rho2_ghost, T1_ghost, T2_ghost, alpha1_ghost, alpha2_ghost;
+  	// ghost cell 2
+	scalar p_ghost_update2, U_ghost_update2, rho_ghost_update2;
+	// ghost cell 1
+	scalar U_ghost, p_ghost, rho_ghost, rho1_ghost, rho2_ghost, T1_ghost, T2_ghost, alpha1_ghost, alpha2_ghost;
+	// ghost cell 2
+	scalar U_ghost2, p_ghost2, rho_ghost2;
+	// speed of sound 
 	scalar sos, sos1, sos2;
-
-  	// obtaining current timestep deltaT
-  	scalar dt = runTime.deltaT().value();
 
   	// obtaining the ghost cell information
 
@@ -137,3 +140,64 @@
   	Info << "alpha1_ghost_update = " << alpha1_ghost_update << nl << endl;
   
   //-----------------------------------------------------------
+
+  //-----------------------------------------------------------
+  // subsonic outflow boundary condition
+  //-----------------------------------------------------------
+  
+  // obtaining current timestep deltaT
+  scalar dt = runTime.deltaT().value();
+
+  // declare essential variables	
+  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.9, areaRatio = dischargeCoeff*(area2/area1);
+  scalar rhoU_ghost, rhoU_ghost_update, ddrhoU_ghost;	
+
+  //ghost cell information for subsonic outflow
+  if (runTime.time().value() == 0.0)
+  {	
+	    U_ghost2 = scalar(0);
+	    p_ghost2 = scalar(599000);
+	    rho_ghost2 = scalar(33.295);
+      	    rho1_ghost = scalar(33.295);
+      	    rho2_ghost = scalar(1088.9);
+      	    T1_ghost = scalar(220.00);
+      	    T2_ghost = scalar(220.00);
+            alpha1_ghost = scalar(1.0)*(rho_ghost/rho1_ghost);
+            alpha2_ghost = scalar(1.0) - alpha1_ghost;
+   }
+   else
+   {
+  	    U_ghost2 = U_ghost_update2;
+      	    p_ghost2 = p.boundaryField()[patchID][0];
+	    rho_ghost2 = alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
+	    rho1_ghost = rho1.boundaryField()[patchID][0];
+      	    rho2_ghost = rho2.boundaryField()[patchID][0];
+      	    T1_ghost = thermo1.T().boundaryField()[patchID][0]; 
+      	    T2_ghost = thermo2.T().boundaryField()[patchID][0];
+      	    alpha1_ghost = alpha1.boundaryField()[patchID][0]; 
+      	    alpha2_ghost = alpha2.boundaryField()[patchID][0];
+   }	
+ 
+  //calculat rho*U for the new ghost cell (subsonic ghost cell)  
+  rhoU_ghost = rho_ghost*U_ghost*dischargeCoeff*areaRatio;	
+  rhoU_ghost_update = rho_ghost_update*U_ghost_update*dischargeCoeff*areaRatio;	 	
+  ddrhoU_ghost = (rhoU_ghost_update-rhoU_ghost)/dt; 	
+	
+  //wave amplitude calculation  
+  scalar wave22 = (U_ghost2/xDimDim[celln])*(p_ghost2 - p_interior-sos*sos*(rho_ghost2-rho_interior));
+  scalar wave32 = ((U_ghost2+sos)/xDimDim[celln])*(p_ghost2-p_interior+rho_ghost2*sos*(U_ghost2-U_interior));
+  scalar wave12 = (1.0/(U_ghost2-sos))*(-2.0*U_ghost2*wave22-2.0*ddrhoU_ghost*sos*sos-(U_ghost2+sos)*wave32); 	
+
+  //solving characteristic form governing equations	
+  scalar DpDt2 = -0.5*(wave32+wave12);
+  scalar DuDt2 = -0.5/(rho_ghost2*sos)*(wave32-wave12);
+  scalar DrhoDt2 = 1.0/(sos*sos)*(DpDt2+wave22);
+
+  p_ghost_update2 = p_ghost2 + DpDt2*dt;
+  U_ghost_update2 = U_ghost2 + DuDt2*dt;
+  rho_ghost_update2 = rho_ghost2 + DrhoDt2*dt;			
+
+  Info << "drhoUdt = " << ddrhoU_ghost << nl << endl;	
+  Info << "p' = " << p_ghost_update2 << nl << endl;
+  Info << "U' = " << U_ghost_update2 << nl << endl;	  
+  Info << "rho' = " << rho_ghost_update2 << nl << endl;	
