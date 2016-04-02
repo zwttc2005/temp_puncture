@@ -43,6 +43,7 @@
       - (alpha1*rho1*mag(U1)*he1)*areaSource     //quasi-one-dimensional flow source term
       + qV	
       + FvU_bulk
+      + qV_wall
     );
 
     fvScalarMatrix he2Eqn
@@ -95,7 +96,9 @@
    
    //if (flowArea > flowArea[10])
    //{
-   	//Info<< "he1" << he1 << nl << endl; 
+   	//Info<< "he1" << he1 << nl << endl;
+	//Info << "error1" << heatTransferCoeff*(thermo1.T() - thermo2.T()) << nl << endl;
+	//Info << "error" << heatTransferCoeff*he2/Cpv2-fvm::Sp(heatTransferCoeff/Cpv2,he2) << nl << endl;  
    //}
 
 

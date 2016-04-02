@@ -1,1 +1,1 @@
-../equation_of_state/hRefpropLiq/hRefpropLiqThermo.H
+../hRefpropLiq/hRefpropLiqThermo.H

@@ -263,3 +263,39 @@
 	mesh,
  	dimensionedScalar("0",dimensionSet (1,-1,-3,0,0),0)
    );
+
+   volScalarField htcVap
+   (
+     IOobject
+     (
+ 	"htcVap",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,0,-3,-1,0),0)
+   );
+   
+   volScalarField qV_wall
+   (
+     IOobject
+     (
+ 	"qV_wall",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,-1,-3,0,0),0)
+   );
+
+   volScalarField Twall
+   (
+     IOobject
+     (
+ 	"Twall",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (0,0,0,1,0),0)
+   );
