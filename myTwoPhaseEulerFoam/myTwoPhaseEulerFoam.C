@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 
             
 	    // update boundary conditions
-	    //p.boundaryField()[patchID] == p_ghost_update2;
+	    p.boundaryField()[patchID] == p_ghost_update2;
             U1.boundaryField()[patchID] == vector(U_ghost_update2,0,0);
             U2.boundaryField()[patchID] == vector(U_ghost_update2,0,0);
             //thermo1.T().boundaryField()[patchID] == T_ghost_update;

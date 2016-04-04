@@ -172,21 +172,21 @@
   //-----------------------------------------------------------
   // subsonic outflow boundary condition
   //-----------------------------------------------------------
-  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.3, areaRatio = dischargeCoeff*(area2/area1);
+  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.9, areaRatio = dischargeCoeff*(area2/area1);
   scalar rhoU_ghost, rhoU_ghost_update, ddrhoU_ghost;	
 
   //ghost cell information for subsonic outflow
   if (runTime.time().value() == 0.0)
   {	
-	    U_ghost2 = scalar(0);
-	    p_ghost2 = scalar(599000);
-	    rho_ghost2 = scalar(33.295);
-      	    rho1_ghost = scalar(33.295);
-      	    rho2_ghost = scalar(1088.9);
-      	    T1_ghost = scalar(220.00);
-      	    T2_ghost = scalar(220.00);
-            alpha1_ghost = scalar(1.0)*(rho_ghost/rho1_ghost);
-            alpha2_ghost = scalar(1.0) - alpha1_ghost;
+	    U_ghost2 = U_interior;      
+	    p_ghost2 = p_interior;      
+	    rho_ghost2 = rho_interior;  
+      	    rho1_ghost = rho1[celln];
+      	    rho2_ghost = rho2[celln];
+      	    T1_ghost = thermo1.T()[celln];
+      	    T2_ghost = thermo2.T()[celln];
+            alpha1_ghost = alpha1[celln];
+            alpha2_ghost = alpha2[celln];
    }
    else
    {
@@ -229,8 +229,8 @@
     //----------------------------------------------------------		
  
   //calculat rho*U for the new ghost cell (subsonic ghost cell)  
-  rhoU_ghost = rho_ghost*U_ghost*areaRatio;	
-  rhoU_ghost_update = rho_ghost_update*U_ghost_update*areaRatio;	 	
+  rhoU_ghost = rho_ghost*U_ghost*dischargeCoeff*areaRatio;	
+  rhoU_ghost_update = rho_ghost_update*U_ghost_update*dischargeCoeff*areaRatio;	 	
   ddrhoU_ghost = (rhoU_ghost_update-rhoU_ghost)/dt; 	
 	
   //wave amplitude calculation  
