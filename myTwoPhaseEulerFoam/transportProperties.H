@@ -65,7 +65,7 @@ for(i = 0; i < celln+1; i++)
 	// heat transfer to the vapour phase from the wall
 	if (TwallS > thermo1.T()[i])
 	{	
-		qV_wallS = htcVapS*totalArea/totalVolume*(TwallS - thermo1.T()[i]);
+		qV_wallS = 10.0*htcVapS*totalArea/totalVolume*(TwallS - thermo1.T()[i]);
 	}
 	else
 	{
@@ -76,7 +76,7 @@ for(i = 0; i < celln+1; i++)
 	qV_wall[i] = qV_wallS;
 
 	// updating pipeline wall temperature 
-	TwallS = TwallS - (qV_wallS*dt)/(rhowall*cpwall*((Foam :: pow((0.5*id+thickness),2)-Foam :: pow((0.5*id),2))/(Foam :: pow (0.5*od,2))));
+	TwallS = TwallS - (qV_wallS*dt)/(rhowall*cpwall*((Foam :: pow((0.5*id+thickness),2)-Foam :: pow((0.5*id),2))/(Foam :: pow (0.5*id,2))));
 	Twall[i] = TwallS; 
 }
 

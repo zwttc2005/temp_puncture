@@ -172,7 +172,7 @@
   //-----------------------------------------------------------
   // subsonic outflow boundary condition
   //-----------------------------------------------------------
-  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.9, areaRatio = dischargeCoeff*(area2/area1);
+  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.75, areaRatio = dischargeCoeff*(area2/area1);
   scalar rhoU_ghost, rhoU_ghost_update, ddrhoU_ghost;	
 
   //ghost cell information for subsonic outflow
@@ -191,7 +191,7 @@
    else
    {
   	    U_ghost2 = U_ghost_update2;
-      	    p_ghost2 = p.boundaryField()[patchID][0];
+      	    p_ghost2 = p_ghost_update2;
 	    rho_ghost2 = alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
 	    rho1_ghost = rho1.boundaryField()[patchID][0];
       	    rho2_ghost = rho2.boundaryField()[patchID][0];
@@ -228,8 +228,15 @@
     Info << "sound speed =" << sos << nl << endl;  
     //----------------------------------------------------------		
  
-  //calculat rho*U for the new ghost cell (subsonic ghost cell)  
-  rhoU_ghost = rho_ghost*U_ghost*dischargeCoeff*areaRatio;	
+  //calculat rho*U for the new ghost cell (subsonic ghost cell)
+  if (runTime.time().value() == 0.0)
+  {   
+  	rhoU_ghost = 0.0;
+  }
+  else
+  {
+        rhoU_ghost = rho_ghost2*U_ghost2;
+  }	
   rhoU_ghost_update = rho_ghost_update*U_ghost_update*dischargeCoeff*areaRatio;	 	
   ddrhoU_ghost = (rhoU_ghost_update-rhoU_ghost)/dt; 	
 	

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     dimensionedScalar TwallInit
  	("TwallInit",
 	 dimensionSet (0,0,0,1,0,0,0),
-	 scalar(294.0));
+	 scalar(292.68));
     
     // friction factor
     scalar frictionFactor = 0.005;
