@@ -17,7 +17,7 @@ scalar thickness = 0.011;
 scalar id = 0.233;
 scalar od = id + 2.*thickness; 
 scalar rhowall = 7950.0;
-scalar cpwall = 400.0;
+scalar cpwall = 800.0;
 scalar kwall = 40.0;
 scalar htcWall = 1./(0.5*id/kwall*Foam :: log((od)/id));
 totalArea = 3.1415926*id*length;
@@ -57,7 +57,7 @@ for(i = 0; i < celln+1; i++)
 	scalar qV_wallS;
 	scalar htcVapS;	
 
-	htcVapS = 0.023*Foam :: pow((alpha1[i]*(rho1[i]*mag(U1[i])*id/muvap)),0.8) 
+	htcVapS = 0.023*Foam :: pow((alpha1[i]*(rho1[i]*mag(U1[celln/2])*id/muvap)),0.8) 
 	* Foam :: pow((cpVap[i]*muvap/kvap),0.4)*kvap/(1.0*id);
 
 	htcVapS = 1./(1./htcVapS+1./htcWall);

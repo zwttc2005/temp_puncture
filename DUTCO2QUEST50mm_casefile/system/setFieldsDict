@@ -19,7 +19,7 @@ defaultFieldValues
 (
     volScalarFieldValue alpha.air 0.8037
     
-    volScalarFieldValue T.air 291.63
+    volScalarFieldValue T.air 292.68
     volScalarFieldValue T.water 291.63
     volScalarFieldValue p 5542607.0
 );
