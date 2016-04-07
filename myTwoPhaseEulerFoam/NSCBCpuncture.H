@@ -172,7 +172,7 @@
   //-----------------------------------------------------------
   // subsonic outflow boundary condition
   //-----------------------------------------------------------
-  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.75, areaRatio = dischargeCoeff*(area2/area1);
+  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.70, areaRatio = dischargeCoeff*(area2/area1);
   scalar rhoU_ghost, rhoU_ghost_update, ddrhoU_ghost;	
 
   //ghost cell information for subsonic outflow
