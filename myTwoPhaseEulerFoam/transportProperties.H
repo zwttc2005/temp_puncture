@@ -17,7 +17,7 @@ scalar thickness = 0.011;
 scalar id = 0.233;
 scalar od = id + 2.*thickness; 
 scalar rhowall = 7950.0;
-scalar cpwall = 400.0;
+scalar cpwall = 350.0;
 scalar kwall = 40.0;
 scalar htcWall = 1./(0.5*id/kwall*Foam :: log((od)/id));
 totalArea = 3.1415926*id*length;
@@ -40,18 +40,10 @@ volScalarField cpVap("cpVap", thermo1.Cpv());
 	T = TvapInit;
 	rho = rhovapInit/44.01;
 	TRNPRPdll (T,rho,xvap,eta,tcx,ierr,herr,255); // 255 is compeletly random 
-	
-	if (ierr == 0)
-	{
-		muvap = eta/1000000.; // upa.s to pa.s
-		kvap = tcx; // W/m-K
-	}
-	else
-	{
-		muvap = muvap;
-		kvap = kvap;
-	}	
-	
+
+	muvap = eta/1000000.; // upa.s to pa.s
+	kvap = tcx; // W/m-K
+
 	//TRNPRPdll (TliqInit,rholiqInit,xliq,eta,tcx,ierr,herr,255);
 
 	//muliq = eta/1000000.	
@@ -65,7 +57,7 @@ for(i = 0; i < celln+1; i++)
 	scalar qV_wallS;
 	scalar htcVapS;	
 
-	htcVapS = 0.023*Foam :: pow((alpha1[i]*(rho1[i]*mag(U1[i])*id/muvap)),0.8) 
+	htcVapS = 0.023*Foam :: pow((alpha1[i]*(rho1[i]*mag(U1[celln/2])*id/muvap)),0.8) 
 	* Foam :: pow((cpVap[i]*muvap/kvap),0.4)*kvap/(1.0*id);
 
 	htcVapS = 1./(1./htcVapS+1./htcWall);
@@ -73,7 +65,7 @@ for(i = 0; i < celln+1; i++)
 	// heat transfer to the vapour phase from the wall
 	if (TwallS > thermo1.T()[i])
 	{	
-		qV_wallS = 1000.*htcVapS*totalArea/totalVolume*(TwallS - thermo1.T()[i]);
+		qV_wallS = 5.0*htcVapS*totalArea/totalVolume*(TwallS - thermo1.T()[i]);
 	}
 	else
 	{
@@ -84,9 +76,9 @@ for(i = 0; i < celln+1; i++)
 	qV_wall[i] = qV_wallS;
 
 	// updating pipeline wall temperature 
-	TwallS = TwallS - (qV_wallS*dt)/(rhowall*cpwall*((Foam :: pow((0.5*id+thickness),2)-Foam :: pow((0.5*id),2))/(Foam :: pow (0.5*od,2))));
+	TwallS = TwallS - (qV_wallS*dt)/(rhowall*cpwall*((Foam :: pow((0.5*id+thickness),2)-Foam :: pow((0.5*id),2))/(Foam :: pow (0.5*id,2))));
 	Twall[i] = TwallS; 
 }
 
 //Info << "wall temperature" << Twall << nl << endl;
-Info << "heat transfer"  << qV_wall[celln] << nl << endl;
+//Info << "heat transfer"  << qV_wall << nl << endl;

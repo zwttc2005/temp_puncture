@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     dimensionedScalar TwallInit
  	("TwallInit",
 	 dimensionSet (0,0,0,1,0,0,0),
-	 scalar(294.0));
+	 scalar(292.68));
     
     // friction factor
     scalar frictionFactor = 0.005;
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 
             
 	    // update boundary conditions
-	    //p.boundaryField()[patchID] == p_ghost_update;
+	    p.boundaryField()[patchID] == p_ghost_update2;
             U1.boundaryField()[patchID] == vector(U_ghost_update2,0,0);
             U2.boundaryField()[patchID] == vector(U_ghost_update2,0,0);
             //thermo1.T().boundaryField()[patchID] == T_ghost_update;

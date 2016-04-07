@@ -90,7 +90,7 @@
     	   }
     	   else if (celli >= (celln-100) && celli < celln) 
 	   {
-		        flowAreaGrad[celli] = 0; //(flowArea[celli+1] - flowArea[celli])/xDimDim[celli];
+		        flowAreaGrad[celli] = (flowArea[celli+1] - flowArea[celli])/xDimDim[celli];
 	   }
 	   else if (celli >= celln)
 	   {	
@@ -107,7 +107,7 @@
             }
     	    else if (celli >= (celln-100) && celli < celln) 
 	    {
-		      areaSource[celli] = 0.;//flowAreaGrad[celli]/flowArea[celli];
+		      areaSource[celli] = 0.;// flowAreaGrad[celli]/flowArea[celli];
 	    }
 	    else if (celli >= celln)
 	    { 	

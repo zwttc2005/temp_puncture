@@ -31,9 +31,6 @@
   	scalar U_ghost, p_ghost, rho_ghost, rho1_ghost, rho2_ghost, T1_ghost, T2_ghost, alpha1_ghost, alpha2_ghost;
 	scalar sos, sos1, sos2;
 
-  	// obtaining current timestep deltaT
-  	scalar dt = runTime.deltaT().value();
-
   	// obtaining the ghost cell information
 
 	if (runTime.time().value() == 0.0)

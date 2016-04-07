@@ -149,21 +149,11 @@
     p_cal = p_ghost_update/1000.0; // kpa
     rho_cal = rho_ghost_update/MW; // mol/L
     PDFLSHdll(p_cal,rho_cal,x_cal,T_cal,rholiq_cal,rhovap_cal,xliq_cal,xvap_cal,q_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,ierr,herr,255);
-    
-    if (ierr == 0) 
-    {		
-    	T_ghost_update = T_cal;
-    	rho1_ghost_update = rhovap_cal*MW;
-    	rho2_ghost_update = rholiq_cal*MW;
-    }
-    else 
-    {
-	T_ghost_update = T_ghost_update;		
-	rho1_ghost_update = rho1_ghost_update;
-	rho2_ghost_update = rho2_ghost_update;
-    }
-
-	
+   
+    T_ghost_update = T_cal;
+    rho1_ghost_update = rhovap_cal*MW;
+    rho2_ghost_update = rholiq_cal*MW;
+  
     if (q_cal >= 0.0 && q_cal <= 1.0) 
     {
     	alpha1_ghost_update = q_cal*(rho_cal/rhovap_cal);
@@ -182,26 +172,26 @@
   //-----------------------------------------------------------
   // subsonic outflow boundary condition
   //-----------------------------------------------------------
-  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.9, areaRatio = dischargeCoeff*(area2/area1);
+  scalar area1 = 233.0*233.0, area2 = 50.0*50.0, dischargeCoeff = 0.70, areaRatio = dischargeCoeff*(area2/area1);
   scalar rhoU_ghost, rhoU_ghost_update, ddrhoU_ghost;	
 
   //ghost cell information for subsonic outflow
   if (runTime.time().value() == 0.0)
   {	
-	    U_ghost2 = scalar(0);
-	    p_ghost2 = scalar(599000);
-	    rho_ghost2 = scalar(33.295);
-      	    rho1_ghost = scalar(33.295);
-      	    rho2_ghost = scalar(1088.9);
-      	    T1_ghost = scalar(220.00);
-      	    T2_ghost = scalar(220.00);
-            alpha1_ghost = scalar(1.0)*(rho_ghost/rho1_ghost);
-            alpha2_ghost = scalar(1.0) - alpha1_ghost;
+	    U_ghost2 = U_interior;      
+	    p_ghost2 = p_interior;      
+	    rho_ghost2 = rho_interior;  
+      	    rho1_ghost = rho1[celln];
+      	    rho2_ghost = rho2[celln];
+      	    T1_ghost = thermo1.T()[celln];
+      	    T2_ghost = thermo2.T()[celln];
+            alpha1_ghost = alpha1[celln];
+            alpha2_ghost = alpha2[celln];
    }
    else
    {
   	    U_ghost2 = U_ghost_update2;
-      	    p_ghost2 = p.boundaryField()[patchID][0];
+      	    p_ghost2 = p_ghost_update2;
 	    rho_ghost2 = alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
 	    rho1_ghost = rho1.boundaryField()[patchID][0];
       	    rho2_ghost = rho2.boundaryField()[patchID][0];
@@ -215,7 +205,7 @@
     // speed of sound at the ghost cell for subsonic outflow
     T_cal = T1_ghost, rho_cal = rho1_ghost/MW;
     THERMdll(T_cal,rho_cal,x_cal,p_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,hjt);
-	   	 	
+	   	
     if (w_cal = w_cal) sos1 = w_cal;
     else if (w_cal != w_cal) sos1 = sos1;	
 
@@ -238,8 +228,15 @@
     Info << "sound speed =" << sos << nl << endl;  
     //----------------------------------------------------------		
  
-  //calculat rho*U for the new ghost cell (subsonic ghost cell)  
-  rhoU_ghost = rho_interior*U_interior;	
+  //calculat rho*U for the new ghost cell (subsonic ghost cell)
+  if (runTime.time().value() == 0.0)
+  {   
+  	rhoU_ghost = 0.0;
+  }
+  else
+  {
+        rhoU_ghost = rho_ghost2*U_ghost2;
+  }	
   rhoU_ghost_update = rho_ghost_update*U_ghost_update*dischargeCoeff*areaRatio;	 	
   ddrhoU_ghost = (rhoU_ghost_update-rhoU_ghost)/dt; 	
 	
